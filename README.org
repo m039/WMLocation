@@ -20,3 +20,7 @@ satellites and logs.
 For the logs CompactLog class is used that prints one line instead of
 many lines with the same information. In the triangle brackets a
 number how many the same events were occured.
+
+* License
+WMLocation is licensed under the terms of the Apache 2.0 license as
+listed in the LICENSE file.
