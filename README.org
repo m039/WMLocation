@@ -1,0 +1,20 @@
+* Prelude
+I've LG540 mobile and it has GPS sensor that nobody knows how it
+works. That's why I decided to write a simpliest application to find
+the problem.
+
+But I didn't found the problem and wrote this application.
+
+Maybe later the application's source will be in the next project.
+
+* About
+
+This application gets all information from the GPS sensor from your
+android mobile device and then prints them on the display.
+
+There are 3 tabs that show 3 types of data: a location, a status of
+satellites and logs.
+
+For the logs CompactLog class is used that prints one line instead of
+many lines with the same information. In the triangle brackets a
+number how many the same events was occured.
