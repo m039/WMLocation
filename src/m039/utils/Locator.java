@@ -13,6 +13,9 @@ import android.location.GpsStatus.Listener;
 import android.location.GpsSatellite;
 import android.os.Handler;
 import android.os.Message;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 // (setenv "ANDROID_LOG_TAGS" "Locator:V *:S")
 
@@ -32,7 +35,7 @@ public class Locator {
     public static final int CHANGED_STATUS	= 0x1;
     public static final int CHANGED_LOCATION	= 0x2;
 
-    private StringBuilder mLog		= new StringBuilder();
+    private CompactLog    mLog		= new CompactLog();
     private StringBuilder mStatus	= null;
     private StringBuilder mLocation	= new StringBuilder();
 
@@ -41,10 +44,11 @@ public class Locator {
     private Handler		mHandler;
     private LocationListener	mLocationListener;
     private GpsStatus.Listener	mStatusListener;
-
+   
     /**
      * Why it doesn't work? I really don't know. I'll try
-     * GpsStatus.Listener, maybe it's better.
+     * GpsStatus.Listener, maybe it's better. Hmm.. GpsStatus.Listener
+     * actually is another thing.
      */
     private class MyListener implements LocationListener {
 
@@ -119,7 +123,6 @@ public class Locator {
 
     /**
      * Called within onResume()
-     *
      */
     public void start() {
 	mManager.requestLocationUpdates(mManager.GPS_PROVIDER,
@@ -156,7 +159,6 @@ public class Locator {
 
     /**
      * Creates a new <code>Locator</code> instance.
-     *
      */
     public Locator(Context parent, Handler handler) {
 	mParent = parent;
@@ -208,6 +210,11 @@ public class Locator {
 	}
 
 	mLog.append("\n-[End of a trash]----------\n");
+
+	mLog.append("Fuck them all\n" + "Fuck them all\n" + "Fuck them all\n");
+	mLog.append("Fuck them all\n" + "Fuck them all\n" + "Fuck them all\n");
+	mLog.append("Fuck them all\n" + "Fuck them all\n" + "Fuck them all\n");
+	
 	sendStatus(CHANGED_LOG);
     }
 }

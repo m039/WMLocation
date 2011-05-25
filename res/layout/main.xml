@@ -18,15 +18,18 @@
 	    <TextView
 		android:id="@+id/log_tv"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" />
+		android:layout_height="fill_parent"
+		android:typeface="monospace" />
 	    <TextView
 		android:id="@+id/status_tv"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" />
+		android:layout_height="fill_parent"
+		android:typeface="monospace" />
 	    <TextView
 		android:id="@+id/location_tv"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" />
+		android:layout_height="fill_parent"
+		android:typeface="monospace" />
 	</FrameLayout>
     </LinearLayout>
 </TabHost>
