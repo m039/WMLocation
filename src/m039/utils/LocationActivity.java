@@ -8,6 +8,10 @@ import android.widget.TextView;
 import android.text.method.ScrollingMovementMethod;
 import android.app.TabActivity;
 import android.widget.TabHost;
+import android.text.InputFilter;
+import android.util.Log;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 public class LocationActivity extends TabActivity {
     private Locator mLocator = null;
@@ -36,6 +40,24 @@ public class LocationActivity extends TabActivity {
 	}
     }
 
+    // Taken from the SO
+    private void autoScaleTextViewTextToHeight(TextView tv, String initialString, int requiredWidth) {
+	String old = tv.getText().toString();
+
+	tv.setText(initialString);
+
+	float currentWidth = tv.getPaint().measureText(initialString);
+	float phoneDensity = this.getResources().getDisplayMetrics().density;
+
+	while(currentWidth > (requiredWidth * phoneDensity)) {
+	    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() - 1.0f);
+	    currentWidth = tv.getPaint().measureText(initialString);
+	}
+
+	tv.setText(old);
+    }
+
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +77,7 @@ public class LocationActivity extends TabActivity {
 
 	TabHost th = getTabHost();
 	th.addTab(th.newTabSpec("0").setIndicator("Location").setContent(R.id.location_tv));
-	th.addTab(th.newTabSpec("1").setIndicator("Status").setContent(R.id.status_tv));
+	th.addTab(th.newTabSpec("1").setIndicator("GpsStatus").setContent(R.id.status_tv));
 	th.addTab(th.newTabSpec("2").setIndicator("Log").setContent(R.id.log_tv));
 
 	th.setCurrentTab(0);
@@ -66,6 +88,22 @@ public class LocationActivity extends TabActivity {
     @Override
     public void onResume() {
 	super.onResume();
+
+	TextView tv;
+	
+	//
+	// Recalculation of the text size
+	//
+	tv = (TextView) findViewById(R.id.status_tv);
+	autoScaleTextViewTextToHeight(tv,
+				      "  # | Azimuth | Elevation |  PRN |    SNR\n",
+				      getWindowManager().getDefaultDisplay().getWidth());
+
+	tv = (TextView) findViewById(R.id.log_tv);
+	autoScaleTextViewTextToHeight(tv,
+				      "requestLocationUpdates\t| minTime = " + 3000 + " minDistance = " + 0f + "\n",
+				      getWindowManager().getDefaultDisplay().getWidth());
+	
 	mLocator.start();
     }
 

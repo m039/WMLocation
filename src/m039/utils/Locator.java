@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 // (setenv "ANDROID_LOG_TAGS" "Locator:V *:S")
+// (setenv "ANDROID_LOG_TAGS" "")
 
 /**
  * Here all code for my application. The name of my application is "My
@@ -52,29 +53,37 @@ public class Locator {
      */
     private class MyListener implements LocationListener {
 
-	public MyListener() {
-	    mLocation.append("onLocationChanged:\n");
-	}
-
 	// Implementation of android.location.LocationListener
 
-	public final void onLocationChanged(final Location location) {
-	    mLocation.append(location.toString() + "\n");
+	public final void onLocationChanged(final Location l) {
+	    mLocation = new StringBuilder();
+	    
+	    mLocation.append("onLocationChanged:\n" +
+			     "  Provider  " + l.getProvider() + "\n" +
+			     "  Time      " + l.getTime() + "\n" +
+			     "  Latitude  " + l.getLatitude() + "\n" +
+			     "  Longitude " + l.getLongitude() + "\n" +
+			     "  Altitude  " + l.getAltitude() + "\n" +
+			     "  Speed     " + l.getSpeed() + "\n" +
+			     "  Bearing   " + l.getBearing() + "\n" +
+			     "  Accuracy  " + l.getAccuracy() + "\n" +
+			     "  Extras    " + l.getExtras() + "\n");	    
+
 	    sendStatus(CHANGED_LOCATION);
 	}
 
-	public final void onStatusChanged(final String string, final int n, final Bundle bundle) {
-	    mLog.append("StatusChanged [" + string + "] status=" + n + "\n");
+	public final void onStatusChanged(final String string, final int status, final Bundle bundle) {
+	    mLog.append("onStatusChanged\t|  provider = " + string + " status = " + status + "\n");
 	    sendStatus(CHANGED_LOG);
 	}
 
 	public final void onProviderEnabled(final String string) {
-	    mLog.append("ProviderEnabled [" + string + "] \n");
+	    mLog.append("onProviderEnabled\t| provider = " + string + " \n");
 	    sendStatus(CHANGED_LOG);
 	}
 
 	public final void onProviderDisabled(final String string) {
-	    mLog.append("ProviderDisabled [" + string + "] \n");
+	    mLog.append("onProviderDisabled\t| provider = " + string + " \n");
 	    sendStatus(CHANGED_LOG);
 	}
     }
@@ -83,18 +92,23 @@ public class Locator {
 
 	// Implementation of android.location.GpsStatus$Listener
 
-	public final void onGpsStatusChanged(final int n) {
-	    mLog.append("GpsStatusChanged with " + n + "\n");
+	public final void onGpsStatusChanged(final int event) {
+	    mLog.append(String.format("onGpsStatusChanged\t| event = %1d\n", event));
 	    sendStatus(CHANGED_LOG);
 
-	    if (GpsStatus.GPS_EVENT_SATELLITE_STATUS == n) {
-		mStatus = new StringBuilder();
+	    if (GpsStatus.GPS_EVENT_SATELLITE_STATUS == event) {
+		mStatus = new StringBuilder("  # | Azimuth | Elevation |  PRN |    SNR\n");
 
 		GpsStatus gs = mManager.getGpsStatus(null);
+		    
+		int i = 1;
 		for (GpsSatellite satellite: gs.getSatellites()) {
-		    mStatus.append("Asimuth " + satellite.getAzimuth() + "\n" +
-				   "Elevation " + satellite.getElevation() + "\n" +
-				   "Prn " + satellite.getPrn() + "\n");
+		    mStatus.append(String.format("%3d | %7.2f | %9.2f | %4d | %6.2f\n",
+						 i++,
+						 satellite.getAzimuth(),
+						 satellite.getElevation(),
+						 satellite.getPrn(),
+						 satellite.getSnr()));
 		}
 
 		sendStatus(CHANGED_STATUS);
@@ -103,7 +117,7 @@ public class Locator {
     }
 
     /**
-     * Get a representation of the status.
+     * Get a representation of a status.
      *
      * @param status a status to get
      * @return a string representation of the status
@@ -133,8 +147,8 @@ public class Locator {
 
 	mManager.addGpsStatusListener(mStatusListener);
 	
-	mLog.append("The listener was requested with minTime 3000 (3 sec) and minDistance 0.\n");
-	mLog.append("Added GPSListener.\n");
+	mLog.append("requestLocationUpdates\t| minTime = " + 3000 + " minDistance = " + 0f + "\n");
+	mLog.append("addGpsStatusListener\n");
 
 	sendStatus(CHANGED_LOG);
     }
@@ -145,6 +159,11 @@ public class Locator {
     public void stop() {
 	mManager.removeUpdates(mLocationListener);
 	mManager.removeGpsStatusListener(mStatusListener);
+
+	mLog.append("removeUpdates\n");
+	mLog.append("removeGpsStatusListener\n");
+
+	sendStatus(CHANGED_LOG);
     }
 
     /**
@@ -167,54 +186,22 @@ public class Locator {
 	mLocationListener = new MyListener();
 	mStatusListener = new GPSListener();
 
-	mLog.append("-[Start of a trash]----------\n");
-
-	mLog.append("The location manager was retrieved." +
-		    "There are some interesting parameters of this instance.\n" +
-		    "\n" +
-		    "For an example provider constans:\n" +
-		    " GPS " + mManager.GPS_PROVIDER + "\n" +
-		    " Network " + mManager.NETWORK_PROVIDER + "\n" +
-		    " Passive (wtf?) " + mManager.PASSIVE_PROVIDER + "\n" +
-		    "\n");
-
-	mLog.append("But there is getProviders() function. Let's check it!\n" +
-		    "getProviders(false):\n");
-
-	for (String s: mManager.getProviders(false)) {
-	    mLog.append(" " + s + "\n");
+	Location l = mManager.getLastKnownLocation(mManager.GPS_PROVIDER);
+	if (l == null) {
+	    mLocation.append("Location: " + l);
+	} else {
+	    mLocation.append("LastKnownLocation:\n" +
+			     "  Provider  " + l.getProvider() + "\n" +
+			     "  Time      " + l.getTime() + "\n" +
+			     "  Latitude  " + l.getLatitude() + "\n" +
+			     "  Longitude " + l.getLongitude() + "\n" +
+			     "  Altitude  " + l.getAltitude() + "\n" +
+			     "  Speed     " + l.getSpeed() + "\n" +
+			     "  Bearing   " + l.getBearing() + "\n" +
+			     "  Accuracy  " + l.getAccuracy() + "\n" +
+			     "  Extras    " + l.getExtras() + "\n");
 	}
-
-	mLog.append("getProviders(true):\n");
-
-	for (String s: mManager.getProviders(true)) {
-	    mLog.append(" " + s + "\n");
-	}
-
-	mLog.append("\n" +
-		    "WTF! There is getAllProviders() function even!\n" +
-		    "getAllProviders():\n");
-
-	for (String s: mManager.getAllProviders()) {
-	    mLog.append(" " + s + "\n");
-	}
-
-	Location l = null;
-	mLog.append("Let's look at getLastKnowLocation(GPS_PROVIDER):\n");
-
-	try {
-	    l = mManager.getLastKnownLocation(mManager.GPS_PROVIDER);
-	    mLog.append("Location " + l.toString() + "\n");
-	} catch (NullPointerException e) {
-	    mLog.append("Location is " + l);
-	}
-
-	mLog.append("\n-[End of a trash]----------\n");
-
-	mLog.append("Fuck them all\n" + "Fuck them all\n" + "Fuck them all\n");
-	mLog.append("Fuck them all\n" + "Fuck them all\n" + "Fuck them all\n");
-	mLog.append("Fuck them all\n" + "Fuck them all\n" + "Fuck them all\n");
-	
-	sendStatus(CHANGED_LOG);
+	    
+	sendStatus(CHANGED_LOCATION);	    
     }
 }

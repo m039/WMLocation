@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @version 1.0
  */
 public class CompactLog {
-    private static Pattern	stPattern = Pattern.compile("^(.*)\\<(\\d+)\\>", Pattern.DOTALL);
+    private static Pattern	stPattern = Pattern.compile("^(.*)\\<(\\d+)\\>$", Pattern.DOTALL);
 
     private List<String>	mContent;
 	
