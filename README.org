@@ -1,11 +1,13 @@
 * Prelude
 I've LG540 mobile and it has GPS sensor that nobody knows how it
-works. That's why I decided to write a simpliest application to find
-the problem.
+works. That's why I've decided to write a simpliest application to
+find the problem.
 
-But I didn't found the problem and wrote this application.
+But I didn't found the problem and instead I've wrote this
+application.
 
-Maybe later the application's source will be in the next project.
+Maybe then later the application's source will be useful for the next
+project.
 
 * About
 
@@ -17,4 +19,4 @@ satellites and logs.
 
 For the logs CompactLog class is used that prints one line instead of
 many lines with the same information. In the triangle brackets a
-number how many the same events was occured.
+number how many the same events were occured.
